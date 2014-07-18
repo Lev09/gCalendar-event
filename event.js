@@ -52,7 +52,7 @@ module.exports = {
 		var config = req.body;
 		
 		var myEvent	= {
-			description: config.taskName,
+			summary: config.taskName,
 			start: {
 				dateTime: config.startDate
 			},
@@ -62,7 +62,7 @@ module.exports = {
 		};
 	
 		connectCalendar(config.tokens, function(client) {
-			client.calendar.events.insert({calendarId: config.calendarName}, myEvent)
+			client.calendar.events.insert({calendarId: config.calendarId}, myEvent)
 			.execute(function(error, data) {
 				if (error) console.log("error ", error);
 				if (data) res.send(data);

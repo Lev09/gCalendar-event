@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	</head>
+	<body>
+		<script>
+			var tokens = {
+				"access_token":"ya29.OwChFMs5Ouh3wR8AAAD_mlfMHSUoKWQiZTf-KEvzfskKjolC7co-6OInl94tUw",
+				"token_type":"Bearer",
+				"expires_in":3599
+			};
+			
+			$(function() {
+				$.ajax({
+					type: 'POST',
+					url: '/event',
+					data: {
+						tokens: tokens, 
+						calendarName: "levon.hakopyan@gmail.com",
+						taskName : "test 741852",
+						startDate: "2014-07-06T07:19:47.000Z", 
+						endDate: "2014-08-08T07:19:47.000Z"
+					},
+					success: function(events) {
+						document.write(JSON.stringify(events));
+					}
+				});
+			});
+			
+			$(function() {
+				$.ajax({
+					type: 'GET',
+					url: '/event',
+					data: {
+						tokens: tokens, 
+						calendarName: "levon.hakopyan@gmail.com",
+						startDate: "2014-07-06T07:19:47.000Z", 
+						endDate: "2014-08-08T07:19:47.000Z"
+					},
+					success: function(events) {
+						document.write(JSON.stringify(events));
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
