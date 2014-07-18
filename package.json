@@ -1,0 +1,11 @@
+{
+	"name": "calendar-event",
+	"descripton": "service to create and list events by date",
+	"version": "0.0.1",
+	"private": "true",
+	"dependencies": {
+		"express": "*",
+		"body-parser": "*",
+		"googleapis": "*"
+	}
+}
