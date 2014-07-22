@@ -8,7 +8,7 @@ var event = require('./event');
 app.use(express.static(__dirname + '/sample'));
 app.use(bodyParser.urlencoded());
 
-app.get('/calendarEvent', event.list);
+app.get('/calendarEvent', event.getStatistic);
 app.post('/calendarEvent', event.save);
 
 var server = app.listen(3033, function() {
