@@ -9,33 +9,33 @@
 				token_type: "Bearer",
 				expires_in: 3599
 			};
-			/*
+			
 			$(function() {
 				$.ajax({
 					type: 'POST',
-					url: '/event',
+					url: '/calendarEvent',
 					data: {
 						tokens: tokens, 
-						calendarId: "levon.hakopyan@gmail.com",
+						calendarId: "your_calendar_id",
 						taskName : "test 741852",
-						startDate: "2014-07-06T07:19:47.000Z", 
+						startDate: JSON.stringify(new Date()), 
 						endDate: "2014-08-08T07:19:47.000Z"
 					},
-					success: function(events) {
-						document.write(JSON.stringify(events));
+					success: function(data) {
+						document.write(data);
 					}
 				});
 			});
-			*/
+			
 			$(function() {
 				$.ajax({
 					type: 'GET',
 					url: '/calendarEvent',
 					data: {
 						tokens: tokens, 
-						calendarId: "levon.hakopyan@gmail.com",
+						calendarId: "your_calendar_id",
 						startDate: "2014-07-06T07:19:47.000Z", 
-						endDate: "2014-08-08T07:19:47.000Z"
+						endDate: JSON.stringify(new Date())
 					},
 					success: function(events) {
 						document.write(events);
