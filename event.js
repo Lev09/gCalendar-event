@@ -106,7 +106,7 @@ var modify = function(tasks, params, done) {
 		for(i = 0; i<tasks.items.length; i++) {
 			if(task.summary === tasks.items[i].summary) {
 				quantity ++;
-				newtask.start.dateTime.push(tasks.items[i].start.dateTime);
+				newtask.start.dateTime.push(params.timeMin);
 				newtask.end.dateTime.push(tasks.items[i].end.dateTime);
 				newtask.quantity = quantity;
 			}
@@ -179,5 +179,6 @@ var getDatesDifference = function(start, end) {
 };
 
 getPercent = function(total, number) {
-	return number/total*100;
+	var percent = number/total*100;
+	return Math.round(percent);
 };
