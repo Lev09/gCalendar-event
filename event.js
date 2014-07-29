@@ -23,11 +23,8 @@ var connectCalendar = function(tokens, done) {
 				return;
 			}
 			done(client);
-			return;
-			
 		});
 };
-
 
 module.exports = {
 	
@@ -85,7 +82,7 @@ module.exports = {
 var modify = function(tasks, params, done) {
 	
 	var statistic = {
-		tasksQuantity: tasks.items.length,
+		intervalStartDate: params.timeMin,
 		totalTime: getDatesDifference(params.timeMin, params.timeMax),
 		tasks: [],
 	};
@@ -94,25 +91,43 @@ var modify = function(tasks, params, done) {
 		var quantity = 0;
 		
 		var newtask = {
-			name: task.summary,
+			name: '',
 			start: {
 				dateTime: []
 			},
 			end: {
 				dateTime: []
-			}
+			},
+			duration: []
 		};
 		
 		for(i = 0; i<tasks.items.length; i++) {
 			if(task.summary === tasks.items[i].summary) {
-				quantity ++;
-				newtask.start.dateTime.push(params.timeMin);
-				newtask.end.dateTime.push(tasks.items[i].end.dateTime);
-				newtask.quantity = quantity;
+				
+				var intervalStart = Date.parse(params.timeMin);
+				var intervalEnd = Date.parse(params.timeMax);
+				
+				var taskStart = tasks.items[i].start.dateTime;
+				var taskEnd = tasks.items[i].end.dateTime;
+				
+				if(Date.parse(taskStart) >= intervalStart && Date.parse(taskEnd) <= intervalEnd) {
+					quantity ++;
+					newtask.name = task.summary
+					newtask.start.dateTime.push(taskStart);
+					newtask.end.dateTime.push(taskEnd);
+					var duration = getDatesDifference(taskStart, taskEnd);
+					newtask.duration.push(duration);
+					newtask.quantity = quantity;
+				}
 			}
-		};
-		statistic.tasks.push(newtask);
+		}
+		
+		if (quantity) {
+			statistic.tasks.push(newtask);
+		}
+		
 	});
+	statistic.tasksQuantity = statistic.tasks.length;
 	
 	statistic = removeDublicates(statistic);
 	statistic = calculateTimeAndPercent(statistic);
@@ -121,8 +136,8 @@ var modify = function(tasks, params, done) {
 };
 
 var removeDublicates = function(statistic) {
-	_.each(statistic.tasks, function(task) {
 		
+	_.each(statistic.tasks, function(task) {
 		var quantity = 0;
 		for(i = 0; i<statistic.tasks.length; i++) {
 			if(statistic.tasks[i].name === task.name) {
@@ -132,9 +147,30 @@ var removeDublicates = function(statistic) {
 				}
 			}
 		}
-			
 	});
 	
+	_.each(statistic.tasks, function(task) {
+	
+		_.each(task.duration, function(duration) {
+			var quantity = 0;
+			for(i = 0; i<task.duration.length; i++) {
+				if(task.duration[i].inMs === duration.inMs) {
+					quantity++;
+					if(quantity > 1) {
+						task.duration.splice(i, 1);
+					}
+				}
+			}
+		});
+		
+		var duration = 0;
+		for(i = 0; i<task.duration.length; i++) {
+			duration += task.duration[i].inMs;
+		}
+		task.duration = duration;
+		
+	});
+
 	return statistic;
 };
 
@@ -150,8 +186,9 @@ var calculateTimeAndPercent = function(statistic) {
 		var lastEnd = task.end.dateTime.pop();
 		task.end.dateTime = lastEnd;
 		
-		task.totalTime = getDatesDifference(firstStart, lastEnd);
-		task.totalpercent = getPercent(statistic.totalTime.inMs, task.totalTime.inMs);
+		task.totalTime = getDatesDifference(statistic.intervalStartDate, lastEnd);
+		
+		task.totalPercent = getPercent(statistic.totalTime.inMs, task.duration);
 	});
 	
 	return statistic;
@@ -180,5 +217,6 @@ var getDatesDifference = function(start, end) {
 
 getPercent = function(total, number) {
 	var percent = number/total*100;
-	return Math.round(percent);
+	if (Math.round(percent) == 0) { return 1;	}
+	else { return Math.round(percent); }
 };
